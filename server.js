@@ -1,26 +1,23 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
-
-const connectDB = require("./lib/db");
 const diyaRoutes = require("./routes/diyaRoutes");
+const connectDB = require("./lib/connectDB");
 
 const app = express();
 
-app.use(cors());
+// Middleware
+app.use(cors({ origin: "*" }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(process.cwd(), "public")));
+// Routes
+app.use("/", diyaRoutes);
 
-async function start() {
-  await connectDB();          // ⬅️ BLOCK HERE UNTIL CONNECTED
+// Start server ONLY after DB connects
+const PORT = process.env.PORT || 5000;
 
-  app.use("/", diyaRoutes);
-
-  const PORT = process.env.PORT || 5000;
+connectDB().then(() => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
-}
-
-start();
+});
