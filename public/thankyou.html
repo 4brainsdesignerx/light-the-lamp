@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thank You</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="thankyou">
 
-  <div class="container">
-    <h1>🙏 Thank You</h1>
+  <div class="thankyou-screen">
+    <!-- <div class="icon">🙏</div> -->
+    <h1>Thank You</h1>
     <p>Your diya has been lit</p>
-
-    <button onclick="goBack()">Light Another Diya</button>
   </div>
 
+  <!-- OPTIONAL AUTO RETURN (UNCOMMENT IF NEEDED) -->
+  <!--
   <script>
-    function goBack() {
+    setTimeout(() => {
       window.location.href = "/";
-    }
+    }, 4000);
   </script>
+  -->
 
 </body>
 </html>

@@ -7,7 +7,7 @@
 body {
   margin: 0;
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(180deg, #b71c1c, #7f0000);
+  background: linear-gradient(180deg, #BF2828, #BF2828);
   color: white;
   min-height: 100vh;
   display: flex;
@@ -60,7 +60,7 @@ button {
   font-size: 1.1rem;
   font-weight: 600;
   background: linear-gradient(90deg, #ffd54f, #ffb300);
-  color: #4e0000;
+  color: #BF2828;
   border: none;
   border-radius: 14px;
   cursor: pointer;
@@ -86,5 +86,52 @@ button:active {
 
   input, button {
     font-size: 1.2rem;
+  }
+}
+
+
+/* FULLSCREEN THANK YOU */
+body.thankyou {
+  margin: 0;
+  background: linear-gradient(180deg, #BF2828, #BF2828);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thankyou-screen {
+  text-align: center;
+  padding: 40px;
+}
+
+.thankyou-screen .icon {
+  font-size: 6rem;
+  margin-bottom: 20px;
+}
+
+.thankyou-screen h1 {
+  font-size: 3.5rem;
+  margin: 0 0 12px;
+  color: #fff;
+}
+
+.thankyou-screen p {
+  font-size: 1.5rem;
+  color: #ffe082;
+}
+
+/* LARGE SCREENS / LED WALL */
+@media (min-width: 1024px) {
+  .thankyou-screen .icon {
+    font-size: 8rem;
+  }
+
+  .thankyou-screen h1 {
+    font-size: 4.5rem;
+  }
+
+  .thankyou-screen p {
+    font-size: 2rem;
   }
 }
