@@ -12,20 +12,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-async function startServer() {
-  try {
-    await connectDB();               // ✅ CONNECT FIRST
+async function start() {
+  await connectDB();          // ⬅️ BLOCK HERE UNTIL CONNECTED
 
-    app.use("/", diyaRoutes);
+  app.use("/", diyaRoutes);
 
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("❌ Failed to start server", err);
-    process.exit(1);
-  }
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+  });
 }
 
-startServer();
+start();
