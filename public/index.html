@@ -1,21 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Light a Diya</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div class="container">
-    <h1>Light a Diya</h1>
+  <div class="screen">
+    <img src="logo.png" alt="Logo" class="logo" />
+
+    <h1 class="title">Light a Diya</h1>
+    <p class="subtitle">Add your name and spread the light ✨</p>
 
     <input
       id="nameInput"
       type="text"
       placeholder="Enter your name"
+      maxlength="30"
     />
 
-    <button onclick="submitName()">Submit</button>
+    <button onclick="submitName()">Light the Diya</button>
   </div>
 
   <script src="app.js"></script>

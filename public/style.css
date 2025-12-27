@@ -1,33 +1,90 @@
+/* RESET */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: #b22222;
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #b71c1c, #7f0000);
   color: white;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.container {
+/* MAIN SCREEN */
+.screen {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 24px;
   text-align: center;
-  background: rgba(0,0,0,0.2);
-  padding: 40px;
-  border-radius: 12px;
 }
 
+/* LOGO */
+.logo {
+  width: 320px;
+  max-width: 60%;
+  margin-bottom: 46px;
+}
+
+/* TEXT */
+.title {
+  font-size: 2.2rem;
+  margin: 12px 0 8px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 28px;
+}
+
+/* INPUT */
 input {
-  padding: 12px;
-  font-size: 18px;
-  margin: 10px 0;
-  width: 250px;
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  margin-bottom: 20px;
 }
 
+/* BUTTON */
 button {
-  padding: 12px 24px;
-  font-size: 18px;
-  background: white;
-  color: #b22222;
+  width: 100%;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #ffd54f, #ffb300);
+  color: #4e0000;
   border: none;
-  border-radius: 8px;
+  border-radius: 14px;
   cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* THANK YOU ICON */
+.spark {
+  font-size: 3.5rem;
+  margin: 20px 0 30px;
+}
+
+/* LARGE PHONES / TABLETS */
+@media (min-width: 600px) {
+  .title {
+    font-size: 2.6rem;
+  }
+
+  input, button {
+    font-size: 1.2rem;
+  }
 }
