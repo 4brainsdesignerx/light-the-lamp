@@ -58,6 +58,14 @@ const Diya = require("../models/Diya");
 const connectDB = require("../lib/db");
 const diyaQueue = require("../lib/diyaQueue");
 
+const dummyNames = require("../lib/dummyNames");
+const { fillRemaining } = require("../lib/adminFillQueue");
+
+const getNextDiyaIndex = require("../lib/getNextDiyaIndex");
+
+const Counter = require("../models/Counter");
+
+
 const router = express.Router();
 const MAX_DIYAS = 32;
 
@@ -105,26 +113,105 @@ router.get("/diya-state", async (req, res) => {
 //   }
 // });
 
+
+
+
+// router.post("/add-name", async (req, res) => {
+//   try {
+//     await connectDB();
+
+//     const { name } = req.body;
+//     if (!name) {
+//       return res.status(400).json({ error: "Name required" });
+//     }
+
+//     // Just enqueue — do NOT create immediately
+//     diyaQueue.enqueue(name, Diya, MAX_DIYAS);
+
+//     // Respond instantly (important for mobile UX)
+//     res.json({
+//       status: "queued",
+//       message: "Your diya will be lit shortly"
+//     });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+
+
 router.post("/add-name", async (req, res) => {
   try {
     await connectDB();
 
     const { name } = req.body;
-    if (!name) {
+    if (!name)
       return res.status(400).json({ error: "Name required" });
+
+    const index = await getNextDiyaIndex();
+
+    if (index >= MAX_DIYAS) {
+      return res.status(409).json({ error: "Diya wall full" });
     }
 
-    // Just enqueue — do NOT create immediately
-    diyaQueue.enqueue(name, Diya, MAX_DIYAS);
+    const diya = await Diya.create({
+      name,
+      diyaIndex: index
+    });
 
-    // Respond instantly (important for mobile UX)
     res.json({
-      status: "queued",
-      message: "Your diya will be lit shortly"
+      status: "ok",
+      diyaIndex: index
     });
 
   } catch (err) {
     console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+/**
+ * ADMIN: Reset wall
+ */
+// router.post("/admin/reset", async (req, res) => {
+//   try {
+//     await connectDB();
+//     await Diya.deleteMany({});
+//     res.json({ message: "Diya wall reset" });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+router.post("/admin/reset", async (req, res) => {
+  try {
+    await connectDB();
+
+    await Diya.deleteMany({});
+    await Counter.deleteMany({ name: "diyaIndex" });
+
+    res.json({ message: "Wall and counter reset" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * ADMIN: Fill remaining with dummy names
+ */
+router.post("/admin/fill-remaining", async (req, res) => {
+  try {
+    await connectDB();
+
+    fillRemaining(Diya, MAX_DIYAS, dummyNames);
+
+    res.json({
+      message: "Filling remaining diyas (2s gap)"
+    });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

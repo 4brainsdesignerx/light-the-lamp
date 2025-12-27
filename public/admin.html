@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel</title>
+  <!-- <link rel="stylesheet" href="style.css"/> -->
+  <link rel="stylesheet" href="admin.css" />
+
+</head>
+<body>
+
+  <div class="container">
+    <h1>🛠 Admin Panel</h1>
+
+    <button onclick="resetWall()">Reset Diya Wall</button>
+    <br/><br/>
+    <button onclick="fillRemaining()">Fill Remaining Diyas</button>
+
+    <p id="status"></p>
+  </div>
+
+  <script>
+    async function resetWall() {
+      if (!confirm("Are you sure?")) return;
+
+      const res = await fetch("/admin/reset", { method: "POST" });
+      document.getElementById("status").innerText =
+        "Wall reset completed";
+    }
+
+    async function fillRemaining() {
+      const res = await fetch("/admin/fill-remaining", { method: "POST" });
+      document.getElementById("status").innerText =
+        "Filling remaining diyas...";
+    }
+  </script>
+
+</body>
+</html>
