@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const diyaRoutes = require("./routes/diyaRoutes");
 const connectDB = require("./lib/connectDB");
+const path = require("path");
+
 
 const app = express();
 
