@@ -173,6 +173,45 @@ router.get("/diya-state", async (req, res) => {
 // });
 
 
+// router.post("/add-name", async (req, res) => {
+//   try {
+//     await connectDB();
+
+//     const { name } = req.body;
+//     if (!name) {
+//       return res.status(400).json({ error: "Name required" });
+//     }
+
+//     let diya;
+//     let index;
+
+//     while (true) {
+//       index = await getNextDiyaIndex();
+
+//       if (index >= MAX_DIYAS) {
+//         return res.status(409).json({ error: "Diya wall full" });
+//       }
+
+//       try {
+//         diya = await Diya.create({ name, diyaIndex: index });
+//         break; // success
+//       } catch (err) {
+//         // 🔁 If duplicate index, retry
+//         if (err.code === 11000) continue;
+//         throw err;
+//       }
+//     }
+
+//     res.json({ diyaIndex: index });
+
+//   } catch (err) {
+//     console.error("❌ add-name error:", err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+
+
 router.post("/add-name", async (req, res) => {
   try {
     await connectDB();
@@ -182,27 +221,34 @@ router.post("/add-name", async (req, res) => {
       return res.status(400).json({ error: "Name required" });
     }
 
-    let diya;
-    let index;
+    // Get all used indexes
+    const used = await Diya.find({}, { diyaIndex: 1 }).lean();
+    const usedSet = new Set(used.map(d => d.diyaIndex));
 
-    while (true) {
-      index = await getNextDiyaIndex();
-
-      if (index >= MAX_DIYAS) {
-        return res.status(409).json({ error: "Diya wall full" });
-      }
-
-      try {
-        diya = await Diya.create({ name, diyaIndex: index });
-        break; // success
-      } catch (err) {
-        // 🔁 If duplicate index, retry
-        if (err.code === 11000) continue;
-        throw err;
+    let diyaIndex = -1;
+    for (let i = 0; i < MAX_DIYAS; i++) {
+      if (!usedSet.has(i)) {
+        diyaIndex = i;
+        break;
       }
     }
 
-    res.json({ diyaIndex: index });
+    if (diyaIndex === -1) {
+      return res.status(409).json({ error: "Diya wall full" });
+    }
+
+    let diya;
+    try {
+      diya = await Diya.create({ name, diyaIndex });
+    } catch (err) {
+      // In rare race, retry once
+      if (err.code === 11000) {
+        return res.status(409).json({ error: "Try again" });
+      }
+      throw err;
+    }
+
+    res.json({ diyaIndex });
 
   } catch (err) {
     console.error("❌ add-name error:", err);
