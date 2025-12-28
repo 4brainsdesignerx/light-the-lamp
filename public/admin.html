@@ -1,38 +1,201 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel</title>
-  <!-- <link rel="stylesheet" href="style.css"/> -->
-  <link rel="stylesheet" href="admin.css" />
+  <title>Diya Wall Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #ef4444, #ef4444);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      padding: 32px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 26px;
+    }
+
+    p {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 26px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
+      margin-bottom: 14px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Button colors */
+    .restart-btn {
+      background: #facc15;
+      color: #000;
+    }
+
+    .fill-btn {
+      background: #22c55e;
+      color: #000;
+    }
+
+    .reset-btn {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .status {
+      margin-top: 16px;
+      font-size: 14px;
+      min-height: 18px;
+    }
+
+    .spinner {
+      margin: 12px auto 0;
+      width: 28px;
+      height: 28px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 16px;
+        padding: 28px 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
   <div class="container">
-    <h1>🛠 Admin Panel</h1>
+    <h1>🪔 Diya Wall Admin</h1>
+    <p>Control the Diya Wall during live operation</p>
 
-    <button onclick="resetWall()">Reset Diya Wall</button>
-    <br/><br/>
-    <button onclick="fillRemaining()">Fill Remaining Diyas</button>
+    <!-- Soft Restart -->
+    <button class="restart-btn" onclick="restartWall()">
+      Restart Wall (Unity Only)
+    </button>
 
-    <p id="status"></p>
+    <!-- Fill Remaining -->
+    <button class="fill-btn" onclick="fillRemaining()">
+      Fill Remaining Diyas
+    </button>
+
+    <!-- Hard Reset -->
+    <button class="reset-btn" onclick="resetWall()">
+      Reset Wall (Clear Data)
+    </button>
+
+    <div class="spinner" id="spinner"></div>
+    <div class="status" id="status"></div>
   </div>
 
   <script>
-    async function resetWall() {
-      if (!confirm("Are you sure?")) return;
+    function setLoading(isLoading, message = "") {
+      document.getElementById("spinner").style.display =
+        isLoading ? "block" : "none";
 
-      const res = await fetch("/admin/reset", { method: "POST" });
-      document.getElementById("status").innerText =
-        "Wall reset completed";
+      document.getElementById("status").innerText = message;
+
+      document.querySelectorAll("button").forEach(btn => {
+        btn.disabled = isLoading;
+      });
+    }
+
+    async function restartWall() {
+      if (!confirm("Restart Unity wall visuals?")) return;
+
+      setLoading(true, "Sending restart signal...");
+
+      try {
+        const res = await fetch("/admin/restart", { method: "POST" });
+        const data = await res.json();
+
+        setLoading(false, "✅ Wall restart signal sent (v" + data.version + ")");
+      } catch {
+        setLoading(false, "❌ Restart failed");
+      }
     }
 
     async function fillRemaining() {
-      const res = await fetch("/admin/fill-remaining", { method: "POST" });
-      document.getElementById("status").innerText =
-        "Filling remaining diyas...";
+      if (!confirm("Fill remaining diyas with dummy data?")) return;
+
+      setLoading(true, "Filling remaining diyas...");
+
+      try {
+        await fetch("/admin/fill-remaining", { method: "POST" });
+        setLoading(false, "✅ Filling remaining diyas started");
+      } catch {
+        setLoading(false, "❌ Fill failed");
+      }
+    }
+
+    async function resetWall() {
+      if (!confirm("⚠️ This will CLEAR all diya data. Continue?")) return;
+
+      setLoading(true, "Resetting wall data...");
+
+      try {
+        await fetch("/admin/reset", { method: "POST" });
+        setLoading(false, "✅ Wall reset completed");
+      } catch {
+        setLoading(false, "❌ Reset failed");
+      }
     }
   </script>
 

@@ -65,29 +65,67 @@ const getNextDiyaIndex = require("../lib/getNextDiyaIndex");
 
 const Counter = require("../models/Counter");
 
+const WallState = require("../models/WallState");
+
 
 const router = express.Router();
 const MAX_DIYAS = 32;
 
+
+
+
+// router.get("/diya-state", async (req, res) => {
+//   try {
+//     await connectDB();
+
+//     const data = await Diya.find()
+//       .sort({ createdAt: 1 })
+//       .limit(MAX_DIYAS);
+
+//     res.json({
+//       items: data.map(d => ({
+//         name: d.name,
+//         diyaIndex: d.diyaIndex
+//       }))
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message });
+//   }
+// });
+
+
+
+
 router.get("/diya-state", async (req, res) => {
   try {
-    await connectDB();
+    let state = await WallState.findOne({ key: "main" });
 
-    const data = await Diya.find()
-      .sort({ createdAt: 1 })
-      .limit(MAX_DIYAS);
+    if (!state) {
+      state = await WallState.create({ key: "main", version: 1 });
+    }
+
+    const items = await Diya.find()
+      .sort({ diyaIndex: 1 })
+      .limit(32);
 
     res.json({
-      items: data.map(d => ({
+      version: state.version,
+      items: items.map(d => ({
         name: d.name,
         diyaIndex: d.diyaIndex
       }))
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
+
+
+
 
 // router.post("/add-name", async (req, res) => {
 //   try {
@@ -313,5 +351,25 @@ router.post("/admin/fill-remaining", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
+router.post("/admin/restart", async (req, res) => {
+  try {
+    const state = await WallState.findOneAndUpdate(
+      { key: "main" },
+      { $inc: { version: 1 } },
+      { new: true, upsert: true }
+    );
+
+    res.json({
+      success: true,
+      version: state.version
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 module.exports = router;
