@@ -69,7 +69,7 @@ const WallState = require("../models/WallState");
 
 
 const router = express.Router();
-const MAX_DIYAS = 50;
+const MAX_DIYAS = 250;
 
 
 
@@ -107,7 +107,7 @@ router.get("/diya-state", async (req, res) => {
 
     const items = await Diya.find()
       .sort({ diyaIndex: 1 })
-      .limit(50);
+      .limit(250);
 
     res.json({
       version: state.version,
