@@ -325,7 +325,7 @@ router.post("/add-name", async (req, res) => {
 // });
 
 
-router.post("/admin/reset", async (req, res) => {
+router.post("/adminff/reset", async (req, res) => {
   await connectDB();
 
   await Diya.deleteMany({});
