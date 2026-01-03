@@ -338,7 +338,7 @@ router.post("/admin/reset", async (req, res) => {
 /**
  * ADMIN: Fill remaining with dummy names
  */
-router.post("/admin/fill-remaining", async (req, res) => {
+router.post("/adminff/fill-remaining", async (req, res) => {
   try {
     await connectDB();
 
